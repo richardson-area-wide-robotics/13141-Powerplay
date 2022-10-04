@@ -64,7 +64,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="Basic: Omni Linear OpMode", group="Linear Opmode")
-@Disabled
+
 public class TeleOp extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -73,7 +73,7 @@ public class TeleOp extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor armDrive = null;
+    //private DcMotor armDrive = null;
 
     @Override
     public void runOpMode() {
@@ -84,7 +84,7 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        armDrive = hardwareMap.get(DcMotor.class, "arm_drive");
+        //armDrive = hardwareMap.get(DcMotor.class, "arm_drive");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -100,7 +100,7 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        armDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        //armDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -124,7 +124,7 @@ public class TeleOp extends LinearOpMode {
             double rightFrontPower = axial - lateral - yaw;
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
-            double armPower = gamepad1.left_trigger;
+            //double armPower = gamepad1.left_trigger;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -161,13 +161,13 @@ public class TeleOp extends LinearOpMode {
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-            armDrive.setPower(armPower);
+            //armDrive.setPower(armPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Arm Power", armPower);
+            //telemetry.addData("Arm Power", armPower);
             telemetry.update();
         }
     }}
