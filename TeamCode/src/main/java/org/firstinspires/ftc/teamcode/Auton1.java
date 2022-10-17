@@ -18,8 +18,8 @@ public class Auton1 extends LinearOpMode {
     private int lBPos;
     private int rBPos;
 
-    private final double CLICKS_PER_INCH = 0;
-    private final double CLICKS_PER_DEGREE = 0;
+    private final double CLICKS_PER_INCH = 31.1001805671;
+    private final double CLICKS_PER_DEGREE = 0.05499719409;
 
     @Override
     public void runOpMode() {
@@ -93,6 +93,51 @@ public class Auton1 extends LinearOpMode {
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
 
+        }
+
+        private void turnClockwise(double whatAngle, double speed) {
+            //whatAngle is in degrees(positive means turn clockwise, negative means turn counterclockwise
+
+            // fetch motor positions
+            lFPos = leftFrontDrive.getCurrentPosition();
+            rFPos = rightFrontDrive.getCurrentPosition();
+            lBPos = leftBackDrive.getCurrentPosition();
+            rBPos = rightBackDrive.getCurrentPosition();
+
+            // calculate new targets
+            lFPos += whatAngle * CLICKS_PER_DEGREE;
+            rFPos -= whatAngle * CLICKS_PER_DEGREE;
+            lBPos += whatAngle * CLICKS_PER_DEGREE;
+            rBPos -= whatAngle * CLICKS_PER_DEGREE;
+
+            // move robot to new position
+            leftFrontDrive.setTargetPosition(lFPos);
+            rightFrontDrive.setTargetPosition(rFPos);
+            leftBackDrive.setTargetPosition(lBPos);
+            rightBackDrive.setTargetPosition(rBPos);
+            leftFrontDrive.setPower(speed);
+            rightFrontDrive.setPower(speed);
+            leftBackDrive.setPower(speed);
+            rightBackDrive.setPower(speed);
+
+            // wait for move to complete
+            while (leftFrontDrive.isBusy() || rightFrontDrive.isBusy() ||
+                    leftBackDrive.isBusy() || rightBackDrive.isBusy()) {
+
+                // Display it for the driver.
+                telemetry.addLine("Turn Clockwise");
+                telemetry.addData("Target", "%7d :%7d", lFPos, rFPos, lBPos, rBPos);
+                telemetry.addData("Actual", "%7d :%7d", leftFrontDrive.getCurrentPosition(),
+                        rightFrontDrive.getCurrentPosition(), leftBackDrive.getCurrentPosition(),
+                        rightBackDrive.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            leftFrontDrive.setPower(0);
+            rightFrontDrive.setPower(0);
+            leftBackDrive.setPower(0);
+            rightBackDrive.setPower(0);
         }
     }
 

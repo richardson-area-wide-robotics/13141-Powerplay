@@ -29,10 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -63,9 +64,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group="Linear Opmode")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOpWithPID", group="Linear Opmode")
 
-public class TeleOp extends LinearOpMode {
+public class TeleOpPID extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -73,6 +74,7 @@ public class TeleOp extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
+    private GyroSensor gyroSensor = null;
     //private DcMotor armFrontDrive = null;
     //private DcMotor armBackDrive = null;
     //private DcMotor intakeDrive = null;
@@ -86,6 +88,7 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+
         //armFrontDrive = hardwareMap.get(DcMotor.class, "arm_front_drive");
         //armBackDrive = hardwareMap.get(DcMotor.class, "arm_back_drive");
         //intakeDrive = hardwareMap.get(DcMotor.class, "intake_drive");
@@ -98,6 +101,19 @@ public class TeleOp extends LinearOpMode {
         //armBackDrive.setDirection(DcMotor.Direction.REVERSE);
         //intakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
+        double leftFrontPower;
+        double leftBackPower;
+        double rightFrontPower;
+        double rightBackPower;
+
+        PIDCoefficients thetaCoefficients;
+        double Kp = 1;
+        double Ki = 0;
+        double Kd = 0;
+        thetaCoefficients = new PIDCoefficients(Kp,Ki,Kd);
+        BasicPID thetaControl;
+        thetaControl = new BasicPID(thetaCoefficients);
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -109,46 +125,34 @@ public class TeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             double max;
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            while (true) {
+                // this imaginary pid controller has a control method that uses the
+                // PID controller we defined earlier in a method called calculate
+                // the first argument of calculate is the reference state.
+                // the second is the systems state.
+                double x = gamepad1.left_stick_y;
+                double y = gamepad1.left_stick_x;
+                double t = thetaControl.calculate(gamepad1.right_stick_x, gyroSensor.getRotationFraction());
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
-            //double armFrontPower = gamepad1.left_trigger;
-            //double armBackPower = gamepad1.right_trigger;
+                leftFrontPower = x + y + t;
+                rightFrontPower = x - y - t;
+                leftBackPower = x - y + t;
+                rightBackPower = x + y - t;
 
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+                // x, y, theta input mixing
+                leftFrontDrive.setPower(leftFrontPower);
+                leftBackDrive.setPower(leftBackPower);
+                rightFrontDrive.setPower(rightFrontPower);
+                rightBackDrive.setPower(rightBackPower);
 
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+                //telemetry.addData("Arm Power", armFrontPower);
+                telemetry.update();
             }
 
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
-            //armFrontDrive.setPower(armFrontPower);
-            //armBackDrive.setPower(armBackPower);
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            //telemetry.addData("Arm Power", armFrontPower);
-            telemetry.update();
         }
     }}
