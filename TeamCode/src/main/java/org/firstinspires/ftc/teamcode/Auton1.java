@@ -12,6 +12,9 @@ public class Auton1 extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor rightFrontDrive = null;
+    private DcMotor armDrive = null;
+    private DcMotor leftIntakeDrive = null;
+    private DcMotor rightIntakeDrive = null;
 
     private int lFPos;
     private int rFPos;
@@ -29,11 +32,17 @@ public class Auton1 extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+        armDrive = hardwareMap.get(DcMotor.class, "arm_drive");
+        leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
+        rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        armDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
 
@@ -138,6 +147,14 @@ public class Auton1 extends LinearOpMode {
             rightFrontDrive.setPower(0);
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
+        }
+
+        private void moveArm(double position, double speed) {
+
+        }
+
+        private void intake(int direction) {
+
         }
     }
 

@@ -29,11 +29,11 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * This file contains an example of a Linear "OpMode".
@@ -67,15 +67,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class TeleOp extends LinearOpMode {
 
-    // Declare OpMode members for each of the 4 motors.
+    //servo stuff
+    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static final int    CYCLE_MS    =   50;     // period of each cycle
+    static final double MAX_POS     =  1.0;     // Maximum rotational position
+    static final double MIN_POS     =  0.0;     // Minimum rotational position
+    double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
+
+    // Declare OpMode members for each of the motors and servos.
     private final ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    //private DcMotor armFrontDrive = null;
-    //private DcMotor armBackDrive = null;
-    //private DcMotor intakeDrive = null;
+    private DcMotor leftArmDrive = null;
+    private DcMotor rightArmDrive = null;
+    private Servo leftIntakeServo;
+    private Servo rightIntakeServo;
 
     @Override
     public void runOpMode() {
@@ -86,17 +94,19 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        //armFrontDrive = hardwareMap.get(DcMotor.class, "arm_front_drive");
-        //armBackDrive = hardwareMap.get(DcMotor.class, "arm_back_drive");
-        //intakeDrive = hardwareMap.get(DcMotor.class, "intake_drive");
+        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+        leftIntakeServo = hardwareMap.get(Servo.class, "left_intake_servo");
+        rightIntakeServo = hardwareMap.get(Servo.class, "right_intake_servo");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        //armFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        //armBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        //intakeDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightArmDrive.setDirection((DcMotor.Direction.REVERSE));
+        leftIntakeServo.setDirection(Servo.Direction.FORWARD);
+        rightIntakeServo.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -120,8 +130,6 @@ public class TeleOp extends LinearOpMode {
             double rightFrontPower = axial - lateral - yaw;
             double leftBackPower   = axial - lateral + yaw;
             double rightBackPower  = axial + lateral - yaw;
-            //double armFrontPower = gamepad1.left_trigger;
-            //double armBackPower = gamepad1.right_trigger;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -141,14 +149,38 @@ public class TeleOp extends LinearOpMode {
             rightFrontDrive.setPower(rightFrontPower);
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
-            //armFrontDrive.setPower(armFrontPower);
-            //armBackDrive.setPower(armBackPower);
 
+            //arm
+            if (gamepad1.left_trigger > 0) {
+                leftArmDrive.setPower(gamepad1.left_trigger);
+                rightArmDrive.setPower(gamepad1.left_trigger);
+            } else if (gamepad1.right_trigger > 0) {
+                leftArmDrive.setPower(gamepad1.right_trigger);
+                rightArmDrive.setPower(gamepad1.right_trigger);
+            } else {
+                leftArmDrive.setPower(0);
+                leftArmDrive.setPower(0);
+            }
+
+            //intake
+            if (gamepad1.left_bumper) {
+                // Keep stepping up until we hit the max value.
+                position += INCREMENT ;
+                if (position >= MAX_POS ) {
+                    position = MAX_POS;
+                }
+            }
+            else if (gamepad1.right_bumper){
+                // Keep stepping down until we hit the min value.
+                position -= INCREMENT ;
+                if (position <= MIN_POS ) {
+                    position = MIN_POS;
+                }
+            }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            //telemetry.addData("Arm Power", armFrontPower);
             telemetry.update();
         }
     }}

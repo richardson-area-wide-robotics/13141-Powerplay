@@ -75,9 +75,6 @@ public class TeleOpPID extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
     private GyroSensor gyroSensor = null;
-    //private DcMotor armFrontDrive = null;
-    //private DcMotor armBackDrive = null;
-    //private DcMotor intakeDrive = null;
 
     @Override
     public void runOpMode() {
@@ -89,17 +86,10 @@ public class TeleOpPID extends LinearOpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-        //armFrontDrive = hardwareMap.get(DcMotor.class, "arm_front_drive");
-        //armBackDrive = hardwareMap.get(DcMotor.class, "arm_back_drive");
-        //intakeDrive = hardwareMap.get(DcMotor.class, "intake_drive");
-
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        //armFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        //armBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        //intakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
         double leftFrontPower;
         double leftBackPower;
@@ -149,7 +139,6 @@ public class TeleOpPID extends LinearOpMode {
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-                //telemetry.addData("Arm Power", armFrontPower);
                 telemetry.update();
             }
 
