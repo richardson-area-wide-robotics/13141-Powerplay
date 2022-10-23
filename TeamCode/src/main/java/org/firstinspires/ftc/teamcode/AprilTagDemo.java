@@ -50,6 +50,7 @@ public class AprilTagDemo extends LinearOpMode
     double fy = 578.272;
     double cx = 402.145;
     double cy = 221.506;
+    int coneID;
 
     // UNITS ARE METERS
     double tagsize = 0.166;
@@ -139,6 +140,7 @@ public class AprilTagDemo extends LinearOpMode
                         telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
                         telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
                         telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+                        this.coneID = detection.id;
                     }
                 }
 
@@ -146,6 +148,64 @@ public class AprilTagDemo extends LinearOpMode
             }
 
             sleep(20);
+        }
+
+
+    }
+
+    public int getConeID() {
+        return coneID;
+    }
+
+    public void detect() {
+        ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
+
+        //
+        if(detections != null)
+        {
+            telemetry.addData("FPS", camera.getFps());
+            telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+            telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
+            telemetry.addData("Tag Count", detections.size());
+
+            // If we don't see any tags
+            if(detections.size() == 0)
+            {
+                numFramesWithoutDetection++;
+
+                // If we haven't seen a tag for a few frames, lower the decimation
+                // so we can hopefully pick one up if we're e.g. far back
+                if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
+                {
+                    aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                }
+            }
+            // We do see tags!
+            else
+            {
+                numFramesWithoutDetection = 0;
+
+                // If the target is within 1 meter, turn on high decimation to
+                // increase the frame rate
+                if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
+                {
+                    aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                }
+
+                for(AprilTagDetection detection : detections)
+                {
+                    telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                    telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+                    telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+                    telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                    telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+                    telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+                    telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+                    this.coneID = detection.id;
+                }
+            }
+
+            telemetry.update();
         }
     }
 }

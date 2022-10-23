@@ -68,11 +68,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TeleOp extends LinearOpMode {
 
     //servo stuff
+    /*
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  1.0;     // Maximum rotational position
     static final double MIN_POS     =  0.0;     // Minimum rotational position
     double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
+    */
 
     // Declare OpMode members for each of the motors and servos.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -80,10 +82,15 @@ public class TeleOp extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    private DcMotor leftArmDrive = null;
-    private DcMotor rightArmDrive = null;
-    private Servo leftIntakeServo;
-    private Servo rightIntakeServo;
+    //private DcMotor leftArmDrive = null;
+    //private DcMotor rightArmDrive = null;
+    //private Servo leftIntakeServo;
+    //private Servo rightIntakeServo;
+
+    double leftFrontPower;
+    double rightFrontPower;
+    double leftBackPower;
+    double rightBackPower;
 
     @Override
     public void runOpMode() {
@@ -94,19 +101,19 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
-        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
-        leftIntakeServo = hardwareMap.get(Servo.class, "left_intake_servo");
-        rightIntakeServo = hardwareMap.get(Servo.class, "right_intake_servo");
+        //leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+        //rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+        //leftIntakeServo = hardwareMap.get(Servo.class, "left_intake_servo");
+        //rightIntakeServo = hardwareMap.get(Servo.class, "right_intake_servo");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightArmDrive.setDirection((DcMotor.Direction.REVERSE));
-        leftIntakeServo.setDirection(Servo.Direction.FORWARD);
-        rightIntakeServo.setDirection(Servo.Direction.REVERSE);
+        //leftArmDrive.setDirection(DcMotor.Direction.REVERSE);
+        //rightArmDrive.setDirection((DcMotor.Direction.FORWARD));
+        //leftIntakeServo.setDirection(Servo.Direction.FORWARD);
+        //rightIntakeServo.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -126,10 +133,10 @@ public class TeleOp extends LinearOpMode {
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            leftFrontPower  = axial + lateral + yaw;
+            rightFrontPower = axial - lateral - yaw;
+            leftBackPower   = axial - lateral + yaw;
+            rightBackPower  = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -145,15 +152,16 @@ public class TeleOp extends LinearOpMode {
             }
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower);
-            rightFrontDrive.setPower(rightFrontPower);
-            leftBackDrive.setPower(leftBackPower);
-            rightBackDrive.setPower(rightBackPower);
+            leftFrontDrive.setPower(leftFrontPower/2);
+            rightFrontDrive.setPower(rightFrontPower/2);
+            leftBackDrive.setPower(leftBackPower/2);
+            rightBackDrive.setPower(rightBackPower/2);
 
             //arm
+            /*
             if (gamepad1.left_trigger > 0) {
-                leftArmDrive.setPower(gamepad1.left_trigger);
-                rightArmDrive.setPower(gamepad1.left_trigger);
+                leftArmDrive.setPower(-1 * gamepad1.left_trigger);
+                rightArmDrive.setPower(-1 * gamepad1.left_trigger);
             } else if (gamepad1.right_trigger > 0) {
                 leftArmDrive.setPower(gamepad1.right_trigger);
                 rightArmDrive.setPower(gamepad1.right_trigger);
@@ -161,8 +169,10 @@ public class TeleOp extends LinearOpMode {
                 leftArmDrive.setPower(0);
                 leftArmDrive.setPower(0);
             }
+             */
 
             //intake
+            /*
             if (gamepad1.left_bumper) {
                 // Keep stepping up until we hit the max value.
                 position += INCREMENT ;
@@ -176,11 +186,15 @@ public class TeleOp extends LinearOpMode {
                 if (position <= MIN_POS ) {
                     position = MIN_POS;
                 }
+
+             */
             }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            //telemetry.addData("left trigger", "%4.2f", gamepad1.left_trigger);
+            //telemetry.addData("right trigger", "%4.2f", gamepad1.right_trigger);
             telemetry.update();
         }
-    }}
+    }

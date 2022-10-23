@@ -3,23 +3,25 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@Autonomous(name = "Auton1", group = "Drive Code")
-public class Auton1 extends LinearOpMode {
+@Autonomous(name = "AutonNoVision", group = "Drive Code")
+public class AutonNoVision extends LinearOpMode {
 
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor rightFrontDrive = null;
-    private DcMotor armDrive = null;
-    private DcMotor leftIntakeDrive = null;
-    private DcMotor rightIntakeDrive = null;
+    //private DcMotor leftArmDrive = null;
+    //private DcMotor rightArmDrive = null;
+    //private DcMotor leftIntakeDrive = null;
+    //private DcMotor rightIntakeDrive = null;
 
     private int lFPos;
     private int rFPos;
     private int lBPos;
     private int rBPos;
+    private int armRPos;
+    private int armLPos;
 
     private final double CLICKS_PER_INCH = 31.1001805671;
     private final double CLICKS_PER_DEGREE = 0.05499719409;
@@ -32,22 +34,24 @@ public class Auton1 extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        armDrive = hardwareMap.get(DcMotor.class, "arm_drive");
-        leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
-        rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
+        //leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+        //rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+        //leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
+        //rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        armDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
+        //leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
+        //rightArmDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        //leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
+        //rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
         waitForStart();
 
         //************ Dead Reckoning List ************
-        //insert auton path here
+
 
     }
         private void moveForward(double howFar, double speed) {
@@ -148,14 +152,4 @@ public class Auton1 extends LinearOpMode {
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
         }
-
-        private void moveArm(double position, double speed) {
-
-        }
-
-        private void intake(int direction) {
-
-        }
     }
-
-
