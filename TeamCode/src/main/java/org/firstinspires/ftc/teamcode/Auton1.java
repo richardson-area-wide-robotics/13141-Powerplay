@@ -148,12 +148,10 @@ public class Auton1 extends LinearOpMode {
             leftBackDrive.setPower(0);
             rightBackDrive.setPower(0);
         }
-
         private void moveArm(double position, double speed) {
 
         }
-
-        private void intake(int direction) {
+        private void intake(int direction){
 
         }
     }
