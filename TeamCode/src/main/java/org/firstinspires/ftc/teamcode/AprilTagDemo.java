@@ -145,6 +145,8 @@ public class AprilTagDemo extends LinearOpMode
                 }
 
                 telemetry.update();
+
+
             }
 
             sleep(20);

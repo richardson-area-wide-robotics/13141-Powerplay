@@ -5,9 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import java.util.ArrayList;
 
 @Autonomous(name = "RightRedAuton", group = "Drive Code")
 public class RightRedAuton extends LinearOpMode {
@@ -60,6 +63,7 @@ public class RightRedAuton extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry.setAutoClear(true);
+        String parking = null;
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -99,19 +103,110 @@ public class RightRedAuton extends LinearOpMode {
         });
 
         waitForStart();
+        while (opModeIsActive())
+        {
+            // Calling getDetectionsUpdate() will only return an object if there was a new frame
+            // processed since the last time we called it. Otherwise, it will return null. This
+            // enables us to only run logic when there has been a new frame, as opposed to the
+            // getLatestDetections() method which will always return an object.
+            ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
-        //************ Dead Reckoning List ************
-        if (getConeID() == 0) {
-            moveForward(15, 1);
-            turnClockwise(-90, 1);
-            moveForward(12, 1);
-        } else if (getConeID() == 1) {
-            moveForward(15, 1);
-        } else if (getConeID() == 2) {
-            moveForward(15, 1);
-            turnClockwise(90, 1);
-            moveForward(12, 1);
+            //
+            if(detections != null)
+            {
+                telemetry.addData("FPS", camera.getFps());
+                telemetry.addData("Overhead ms", camera.getOverheadTimeMs());
+                telemetry.addData("Pipeline ms", camera.getPipelineTimeMs());
+                telemetry.addData("Tag Count", detections.size());
+
+                // If we don't see any tags
+                if(detections.size() == 0)
+                {
+                    numFramesWithoutDetection++;
+
+                    // If we haven't seen a tag for a few frames, lower the decimation
+                    // so we can hopefully pick one up if we're e.g. far back
+                    if(numFramesWithoutDetection >= THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION)
+                    {
+                        aprilTagDetectionPipeline.setDecimation(DECIMATION_LOW);
+                    }
+                }
+                // We do see tags!
+                else
+                {
+                    numFramesWithoutDetection = 0;
+
+                    // If the target is within 1 meter, turn on high decimation to
+                    // increase the frame rate
+                    if(detections.get(0).pose.z < THRESHOLD_HIGH_DECIMATION_RANGE_METERS)
+                    {
+                        aprilTagDetectionPipeline.setDecimation(DECIMATION_HIGH);
+                    }
+
+                    for(AprilTagDetection detection : detections)
+                    {
+                        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+                        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+                        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+                        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+                        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+                        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+
+                    }
+
+                }
+
+                telemetry.update();
+
+                if(detections.size()>=1) {
+                    telemetry.addLine(detections.size() + "  targets found");
+                    if (detections.get(0).id == 0) {
+                        telemetry.addLine("Target is Left Parking");
+                        parking = "left";
+                        break;
+                    } else if (detections.get(0).id == 1) {
+                        telemetry.addLine("Target is Middle Parking");
+                        parking = "middle";
+                        break;
+                    } else if(detections.get(0).id == 2){
+                        telemetry.addLine("Target is Right Parking");
+                        parking = "right";
+                        break;
+                    } else{
+                        telemetry.addLine("Target is not 1 2 or 3");
+                    }
+                }else{
+                    telemetry.addLine("no targets found");
+                }
+
+            }
+
+            sleep(20);
         }
+
+
+//************ Dead Reckoning List ************
+        //aprilTagDemo.detect();
+        if (parking == "left") {
+            moveForward(15, 1);
+            telemetry.addLine("Moving forward 15");
+            turnClockwise(-90, 1);
+            telemetry.addLine("Turning Counter Clockwise 90Deg");
+            moveForward(12, 1);
+            telemetry.addLine("Moving forward 12");
+        } else if (parking == "middle") {
+            moveForward(15, 1);
+            telemetry.addLine("Moving forward 15");
+        } else if (parking == "right") {
+            moveForward(15, 1);
+            telemetry.addLine("Moving forward 15");
+            turnClockwise(90, 1);
+            telemetry.addLine("Turning Clockwise 90Deg");
+            moveForward(12, 1);
+            telemetry.addLine("Moving forward 12");
+        }
+
 
     }
 

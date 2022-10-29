@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous(name = "Auton1", group = "Drive Code")
-public class Auton1 extends LinearOpMode {
+public class AutonNoVision extends LinearOpMode {
 
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
