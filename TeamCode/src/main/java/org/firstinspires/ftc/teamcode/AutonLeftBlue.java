@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.checkerframework.checker.units.qual.A;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -13,8 +12,8 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 
-@Autonomous(name = "RightBlueAuton", group = "Drive Code")
-public class RightBlueAuton extends LinearOpMode {
+@Autonomous(name = "AutonLeftBlue", group = "Drive Code")
+public class AutonLeftBlue extends LinearOpMode {
 
     private DcMotor leftFrontDrive = null;
     private DcMotor leftBackDrive = null;
@@ -32,8 +31,9 @@ public class RightBlueAuton extends LinearOpMode {
     private int armRPos;
     private int armLPos;
 
-    private final double CLICKS_PER_INCH = 31.1001805671;
-    private final double CLICKS_PER_DEGREE = 0.05499719409;
+    //Clicks per inch:
+    private final double CLICKS_PER_INCH = 90;
+    private final double CLICKS_PER_DEGREE = 8;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
@@ -75,8 +75,6 @@ public class RightBlueAuton extends LinearOpMode {
         //leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
         //rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
 
-        aprilTagDemo = new AprilTagDemo();
-
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -106,7 +104,6 @@ public class RightBlueAuton extends LinearOpMode {
         });
 
         waitForStart();
-
         while (opModeIsActive())
         {
             // Calling getDetectionsUpdate() will only return an object if there was a new frame
@@ -191,28 +188,35 @@ public class RightBlueAuton extends LinearOpMode {
 
 
 //************ Dead Reckoning List ************
-        //aprilTagDemo.detect();
-        if (parking == "left") {
-            moveForward(15, 1);
-            telemetry.addLine("Moving forward 15");
-            turnClockwise(-90, 1);
-            telemetry.addLine("Turning Counter Clockwise 90Deg");
-            moveForward(12, 1);
-            telemetry.addLine("Moving forward 12");
-        } else if (parking == "middle") {
-            moveForward(15, 1);
-            telemetry.addLine("Moving forward 15");
-        } else if (parking == "right") {
-            moveForward(15, 1);
-            telemetry.addLine("Moving forward 15");
-            turnClockwise(90, 1);
-            telemetry.addLine("Turning Clockwise 90Deg");
-            moveForward(12, 1);
-            telemetry.addLine("Moving forward 12");
-        }
+               //aprilTagDemo.detect();
+                if (parking == "left") {
+                    moveForward(15, 1);
+                    telemetry.addLine("Moving forward 15");
+                    turnClockwise(-90, 1);
+                    telemetry.addLine("Turning Counter Clockwise 90Deg");
+                    moveForward(12, 1);
+                    telemetry.addLine("Moving forward 12");
+                } else if (parking == "middle") {
+                    moveForward(15, 1);
+                    telemetry.addLine("Moving forward 15");
+                } else if (parking == "right") {
+                    moveForward(15, 1);
+                    telemetry.addLine("Moving forward 15");
+                    turnClockwise(90, 1);
+                    telemetry.addLine("Turning Clockwise 90Deg");
+                    moveForward(12, 1);
+                    telemetry.addLine("Moving forward 12");
+                }
 
 
-    }
+            }
+
+
+
+
+
+
+
     private void moveForward(double howFar, double speed) {
         // howFar is in inches
         leftFrontDrive.setTargetPosition(0);
@@ -311,7 +315,6 @@ public class RightBlueAuton extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
-
 
 
     private int getConeID() {

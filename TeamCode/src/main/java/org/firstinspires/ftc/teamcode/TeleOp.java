@@ -82,15 +82,16 @@ public class TeleOp extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
-    //private DcMotor leftArmDrive = null;
-    //private DcMotor rightArmDrive = null;
-    //private Servo leftIntakeServo;
-    //private Servo rightIntakeServo;
+    private DcMotor leftArmDrive = null;
+    private DcMotor rightArmDrive = null;
+    private Servo leftIntakeServo;
+    private Servo rightIntakeServo;
 
     double leftFrontPower;
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
+    double intakePower;
 
     @Override
     public void runOpMode() {
@@ -101,19 +102,19 @@ public class TeleOp extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        //leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
-        //rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
-        //leftIntakeServo = hardwareMap.get(Servo.class, "left_intake_servo");
-        //rightIntakeServo = hardwareMap.get(Servo.class, "right_intake_servo");
+        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+        leftIntakeServo = hardwareMap.get(Servo.class, "left_intake_servo");
+        rightIntakeServo = hardwareMap.get(Servo.class, "right_intake_servo");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        //leftArmDrive.setDirection(DcMotor.Direction.REVERSE);
-        //rightArmDrive.setDirection((DcMotor.Direction.FORWARD));
-        //leftIntakeServo.setDirection(Servo.Direction.FORWARD);
-        //rightIntakeServo.setDirection(Servo.Direction.REVERSE);
+        leftArmDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightArmDrive.setDirection((DcMotor.Direction.FORWARD));
+        leftIntakeServo.setDirection(Servo.Direction.FORWARD);
+        rightIntakeServo.setDirection(Servo.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
@@ -138,6 +139,7 @@ public class TeleOp extends LinearOpMode {
             leftBackPower   = axial - lateral + yaw;
             rightBackPower  = axial + lateral - yaw;
 
+
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -158,7 +160,7 @@ public class TeleOp extends LinearOpMode {
             rightBackDrive.setPower(rightBackPower/2);
 
             //arm
-            /*
+
             if (gamepad1.left_trigger > 0) {
                 leftArmDrive.setPower(-1 * gamepad1.left_trigger);
                 rightArmDrive.setPower(-1 * gamepad1.left_trigger);
@@ -169,7 +171,7 @@ public class TeleOp extends LinearOpMode {
                 leftArmDrive.setPower(0);
                 leftArmDrive.setPower(0);
             }
-             */
+
 
             //intake
             /*
@@ -193,8 +195,8 @@ public class TeleOp extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            //telemetry.addData("left trigger", "%4.2f", gamepad1.left_trigger);
-            //telemetry.addData("right trigger", "%4.2f", gamepad1.right_trigger);
+            telemetry.addData("left trigger", "%4.2f", gamepad1.left_trigger);
+            telemetry.addData("right trigger", "%4.2f", gamepad1.right_trigger);
             telemetry.update();
         }
     }
