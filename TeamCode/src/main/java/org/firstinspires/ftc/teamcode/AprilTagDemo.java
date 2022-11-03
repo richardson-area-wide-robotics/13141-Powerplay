@@ -37,8 +37,14 @@ import java.util.ArrayList;
 @TeleOp
 public class AprilTagDemo extends LinearOpMode
 {
-    OpenCvCamera camera;
-    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+    int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+    OpenCvCamera camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+     //cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+     //this.camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+    //camera.setPipeline(aprilTagDetectionPipeline);
+    //camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener();
 
     static final double FEET_PER_METER = 3.28084;
 
@@ -46,14 +52,17 @@ public class AprilTagDemo extends LinearOpMode
     // UNITS ARE PIXELS
     // NOTE: this calibration is for the C920 webcam at 800x448.
     // You will need to do your own calibration for other configurations!
-    double fx = 578.272;
-    double fy = 578.272;
-    double cx = 402.145;
-    double cy = 221.506;
+    double fx;
+    double fy;
+    double cx;
+    double cy;
     int coneID;
+    double tagsize;
+
+    AprilTagDetectionPipeline aprilTagDetectionPipeline;
+
 
     // UNITS ARE METERS
-    double tagsize = 0.166;
 
     int numFramesWithoutDetection = 0;
 
@@ -62,17 +71,29 @@ public class AprilTagDemo extends LinearOpMode
     final float THRESHOLD_HIGH_DECIMATION_RANGE_METERS = 1.0f;
     final int THRESHOLD_NUM_FRAMES_NO_DETECTION_BEFORE_LOW_DECIMATION = 4;
 
+    public AprilTagDemo() {
+//        this.cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        this.camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        this.fx = 578.272;
+        this.fy = 578.272;
+        this.cx = 402.145;
+        this.cy = 221.506;
+        this.tagsize = 0.166;
+        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+        camera.setPipeline(aprilTagDetectionPipeline);
+    }
+
+
     @Override
     public void runOpMode()
     {
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        // TODO
-        camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
 
-        camera.setPipeline(aprilTagDetectionPipeline);
-        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        // TODO
+
+        //aprilTagDetectionPipeline = new AprilTagDetectionPipeline(tagsize, fx, fy, cx, cy);
+
+
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened()
             {
@@ -156,10 +177,25 @@ public class AprilTagDemo extends LinearOpMode
     }
 
     public int getConeID() {
-        return coneID;
+        return 0;
     }
 
     public void detect() {
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened()
+            {
+                // TODO
+                camera.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+
+            }
+        });
+
         ArrayList<AprilTagDetection> detections = aprilTagDetectionPipeline.getDetectionsUpdate();
 
         //

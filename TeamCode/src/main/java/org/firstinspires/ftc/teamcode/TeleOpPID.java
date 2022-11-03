@@ -137,6 +137,9 @@ public class TeleOpPID extends LinearOpMode {
 
                 // Show the elapsed game time and wheel power.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("X value", x);
+                telemetry.addData("Y value", y);
+                telemetry.addData("Theta value", t);
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
                 telemetry.update();

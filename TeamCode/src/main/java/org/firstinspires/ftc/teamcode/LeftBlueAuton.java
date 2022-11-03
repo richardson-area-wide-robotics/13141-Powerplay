@@ -32,8 +32,9 @@ public class LeftBlueAuton extends LinearOpMode {
     private int armRPos;
     private int armLPos;
 
-    private final double CLICKS_PER_INCH = 31.1001805671;
-    private final double CLICKS_PER_DEGREE = 0.05499719409;
+    //Clicks per inch:
+    private final double CLICKS_PER_INCH = 90;
+    private final double CLICKS_PER_DEGREE = 8;
 
     OpenCvCamera camera;
     AprilTagDetectionPipeline aprilTagDetectionPipeline;
