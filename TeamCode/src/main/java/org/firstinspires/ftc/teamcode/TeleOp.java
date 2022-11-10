@@ -174,11 +174,17 @@ public class TeleOp extends LinearOpMode {
 
             if (gamepad1.left_bumper) {
                 // Keep stepping up until we hit the max value.
-                position = MAX_POS;
+                position += INCREMENT;
+                if(position >= MAX_POS) {
+                    position = MAX_POS;
+                }
 
             } else if (gamepad1.right_bumper) {
                 // Keep stepping down until we hit the min value.
-                position = MIN_POS;
+                position -= INCREMENT;
+                if(position <= MIN_POS) {
+                    position = MIN_POS;
+                }
             }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
