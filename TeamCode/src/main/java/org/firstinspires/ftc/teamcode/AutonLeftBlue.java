@@ -19,10 +19,10 @@ public class AutonLeftBlue extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor rightFrontDrive = null;
-    //private DcMotor leftArmDrive = null;
-    //private DcMotor rightArmDrive = null;
-    //private DcMotor leftIntakeDrive = null;
-    //private DcMotor rightIntakeDrive = null;
+    private DcMotor leftArmDrive = null;
+    private DcMotor rightArmDrive = null;
+    private DcMotor leftIntakeDrive = null;
+    private DcMotor rightIntakeDrive = null;
 
     private int lFPos;
     private int rFPos;
@@ -70,19 +70,19 @@ public class AutonLeftBlue extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        //leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
-        //rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
-        //leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
-        //rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
+        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+        leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
+        rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        //leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
-        //rightArmDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        //leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
-        //rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightArmDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // TODO
@@ -315,7 +315,14 @@ public class AutonLeftBlue extends LinearOpMode {
         leftBackDrive.setPower(0);
         rightBackDrive.setPower(0);
     }
+    private void moveArm(double position, double speed) {
+        //fetch motor positions
+        armRPos = leftFrontDrive.getCurrentPosition();
+        armLPos = rightFrontDrive.getCurrentPosition();
+    }
+    private void intake(int direction){
 
+    }
 
     private int getConeID() {
         return this.aprilTagDemo.getConeID();

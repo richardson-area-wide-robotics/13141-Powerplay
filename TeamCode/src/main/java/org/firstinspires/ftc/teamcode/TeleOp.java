@@ -68,13 +68,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TeleOp extends LinearOpMode {
 
     //servo stuff
-    /*
+
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   50;     // period of each cycle
     static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
-    double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
-    */
+    static final double MIN_POS     =  -1.0;     // Minimum rotational position
+    double  position = 0; // Start at halfway position
 
     // Declare OpMode members for each of the motors and servos.
     private final ElapsedTime runtime = new ElapsedTime();
@@ -91,15 +90,14 @@ public class TeleOp extends LinearOpMode {
     double rightFrontPower;
     double leftBackPower;
     double rightBackPower;
-    double intakePower;
 
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the Driver Station.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
         leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
@@ -128,17 +126,16 @@ public class TeleOp extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            leftFrontPower  = axial + lateral + yaw;
+            leftFrontPower = axial + lateral + yaw;
             rightFrontPower = axial - lateral - yaw;
-            leftBackPower   = axial - lateral + yaw;
-            rightBackPower  = axial + lateral - yaw;
-
+            leftBackPower = axial - lateral + yaw;
+            rightBackPower = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -147,17 +144,17 @@ public class TeleOp extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
 
             // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower/2);
-            rightFrontDrive.setPower(rightFrontPower/2);
-            leftBackDrive.setPower(leftBackPower/2);
-            rightBackDrive.setPower(rightBackPower/2);
+            leftFrontDrive.setPower(leftFrontPower / 2);
+            rightFrontDrive.setPower(rightFrontPower / 2);
+            leftBackDrive.setPower(leftBackPower / 2);
+            rightBackDrive.setPower(rightBackPower / 2);
 
             //arm
 
@@ -174,22 +171,14 @@ public class TeleOp extends LinearOpMode {
 
 
             //intake
-            /*
+
             if (gamepad1.left_bumper) {
                 // Keep stepping up until we hit the max value.
-                position += INCREMENT ;
-                if (position >= MAX_POS ) {
-                    position = MAX_POS;
-                }
-            }
-            else if (gamepad1.right_bumper){
-                // Keep stepping down until we hit the min value.
-                position -= INCREMENT ;
-                if (position <= MIN_POS ) {
-                    position = MIN_POS;
-                }
+                position = MAX_POS;
 
-             */
+            } else if (gamepad1.right_bumper) {
+                // Keep stepping down until we hit the min value.
+                position = MIN_POS;
             }
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -200,3 +189,5 @@ public class TeleOp extends LinearOpMode {
             telemetry.update();
         }
     }
+}
+
