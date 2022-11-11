@@ -114,6 +114,16 @@ public class TeleOp extends LinearOpMode {
         leftIntakeServo.setDirection(Servo.Direction.FORWARD);
         rightIntakeServo.setDirection(Servo.Direction.REVERSE);
 
+        leftArmDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightArmDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int armPosition = 0;
+        leftArmDrive.setTargetPosition(0);
+        rightArmDrive.setTargetPosition(0);
+        leftArmDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightArmDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftArmDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightArmDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -150,14 +160,10 @@ public class TeleOp extends LinearOpMode {
                 rightBackPower /= max;
             }
 
-            // Send calculated power to wheels
-            leftFrontDrive.setPower(leftFrontPower / 2);
-            rightFrontDrive.setPower(rightFrontPower / 2);
-            leftBackDrive.setPower(leftBackPower / 2);
-            rightBackDrive.setPower(rightBackPower / 2);
 
             //arm
 
+            /*
             if (gamepad1.left_trigger > 0) {
                 leftArmDrive.setPower(-1 * gamepad1.left_trigger);
                 rightArmDrive.setPower(-1 * gamepad1.left_trigger);
@@ -168,24 +174,35 @@ public class TeleOp extends LinearOpMode {
                 leftArmDrive.setPower(0);
                 leftArmDrive.setPower(0);
             }
+             */
+
+            //arm run to position
+            if (gamepad1.left_trigger > 0.25)
+                armPosition = leftArmDrive.getCurrentPosition() - 60;
+            else if (gamepad2.right_trigger > 0.25)
+                armPosition = leftArmDrive.getCurrentPosition() + 60;
 
 
             //intake
 
             if (gamepad1.left_bumper) {
                 // Keep stepping up until we hit the max value.
-                position += INCREMENT;
-                if(position >= MAX_POS) {
-                    position = MAX_POS;
-                }
+                position = MAX_POS;
 
             } else if (gamepad1.right_bumper) {
                 // Keep stepping down until we hit the min value.
-                position -= INCREMENT;
-                if(position <= MIN_POS) {
-                    position = MIN_POS;
-                }
+                position = MIN_POS;
             }
+
+            leftArmDrive.setTargetPosition(armPosition);
+            rightArmDrive.setTargetPosition(armPosition);
+            // Send calculated power to wheels
+            leftFrontDrive.setPower(leftFrontPower / 2);
+            rightFrontDrive.setPower(rightFrontPower / 2);
+            leftBackDrive.setPower(leftBackPower / 2);
+            rightBackDrive.setPower(rightBackPower / 2);
+
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
