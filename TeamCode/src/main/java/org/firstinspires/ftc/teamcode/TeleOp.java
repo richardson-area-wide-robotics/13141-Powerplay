@@ -124,6 +124,9 @@ public class TeleOp extends LinearOpMode {
         leftArmDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightArmDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        leftArmDrive.setPower(1);
+        rightArmDrive.setPower(1);
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -177,21 +180,32 @@ public class TeleOp extends LinearOpMode {
              */
 
             //arm run to position
-            if (gamepad1.left_trigger > 0.25)
+            if (gamepad1.left_trigger > 0.25) {
                 armPosition = leftArmDrive.getCurrentPosition() - 60;
-            else if (gamepad2.right_trigger > 0.25)
+            }else if (gamepad1.right_trigger > 0.25) {
                 armPosition = leftArmDrive.getCurrentPosition() + 60;
-
+            }
 
             //intake
 
             if (gamepad1.left_bumper) {
-                // Keep stepping up until we hit the max value.
-                position = MAX_POS;
+//                position += INCREMENT ;
+//                if (position >= MAX_POS ) {
+//                    position = MAX_POS;
+//                }
+                leftIntakeServo.setPosition(1.0);
+                rightIntakeServo.setPosition(1.0);
 
             } else if (gamepad1.right_bumper) {
-                // Keep stepping down until we hit the min value.
-                position = MIN_POS;
+//                position -= INCREMENT ;
+//                if (position <= MIN_POS ) {
+//                    position = MIN_POS;
+//                }
+                leftIntakeServo.setPosition(-1.0);
+                rightIntakeServo.setPosition(-1.0);
+            } else {
+                leftIntakeServo.setPosition(0);
+                rightIntakeServo.setPosition(0);
             }
 
             leftArmDrive.setTargetPosition(armPosition);
@@ -209,6 +223,14 @@ public class TeleOp extends LinearOpMode {
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
             telemetry.addData("left trigger", "%4.2f", gamepad1.left_trigger);
             telemetry.addData("right trigger", "%4.2f", gamepad1.right_trigger);
+            telemetry.addData("armPosition", armPosition);
+            telemetry.addData("leftArmCurrent", leftArmDrive.getCurrentPosition());
+            telemetry.addData("rightArmCurrent", rightArmDrive.getCurrentPosition());
+            telemetry.addData("leftArmTarget", leftArmDrive.getTargetPosition());
+            telemetry.addData("rightArmTarget", rightArmDrive.getTargetPosition());
+            telemetry.addData("left Bumper", gamepad1.left_bumper);
+            telemetry.addData("right bumper", gamepad1.right_bumper);
+            telemetry.addData("right bumper", gamepad1.right_bumper);
             telemetry.update();
         }
     }

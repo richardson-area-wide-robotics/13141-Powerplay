@@ -19,10 +19,10 @@ public class AutonLeftBlue extends LinearOpMode {
     private DcMotor leftBackDrive = null;
     private DcMotor rightBackDrive = null;
     private DcMotor rightFrontDrive = null;
-    private DcMotor leftArmDrive = null;
-    private DcMotor rightArmDrive = null;
-    private DcMotor leftIntakeDrive = null;
-    private DcMotor rightIntakeDrive = null;
+    //private DcMotor leftArmDrive = null;
+    //private DcMotor rightArmDrive = null;
+    //private DcMotor leftIntakeDrive = null;
+    //private DcMotor rightIntakeDrive = null;
 
     private int lFPos;
     private int rFPos;
@@ -70,19 +70,19 @@ public class AutonLeftBlue extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
-        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
-        leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
-        rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
+//        leftArmDrive = hardwareMap.get(DcMotor.class, "left_arm_drive");
+//        rightArmDrive = hardwareMap.get(DcMotor.class, "right_arm_drive");
+//        leftIntakeDrive = hardwareMap.get(DcMotor.class, "left_intake_drive");
+//        rightIntakeDrive = hardwareMap.get(DcMotor.class, "right_intake_drive");
 
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightArmDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
+//        leftArmDrive.setDirection(DcMotor.Direction.FORWARD);
+//        rightArmDrive.setDirection(DcMotor.Direction.REVERSE);
+//        leftIntakeDrive.setDirection(DcMotor.Direction.REVERSE);
+//        rightIntakeDrive.setDirection(DcMotor.Direction.FORWARD);
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         // TODO
@@ -183,30 +183,40 @@ public class AutonLeftBlue extends LinearOpMode {
 
             }
 
+            telemetry.addData("Left Front Power", leftFrontDrive.getPower());
+            telemetry.addData("Right Front Power", rightFrontDrive.getPower());
+            telemetry.addData("Left Back Power", leftBackDrive.getPower());
+            telemetry.addData("Right Back Power", rightBackDrive.getPower());
+            telemetry.update();
+
             sleep(20);
         }
 
 
 //************ Dead Reckoning List ************
-               //aprilTagDemo.detect();
                 if (parking == "left") {
-                    moveForward(15, 1);
+                    moveForward(15, 0.5);
                     telemetry.addLine("Moving forward 15");
-                    turnClockwise(-90, 1);
+                    turnClockwise(90, 0.5);
                     telemetry.addLine("Turning Counter Clockwise 90Deg");
-                    moveForward(12, 1);
+                    moveForward(-12, 0.5);
                     telemetry.addLine("Moving forward 12");
+                    //sleep(30000);
                 } else if (parking == "middle") {
-                    moveForward(15, 1);
+                    moveForward(-15, 0.5);
                     telemetry.addLine("Moving forward 15");
+                    //sleep(30000);
                 } else if (parking == "right") {
-                    moveForward(15, 1);
+                    moveForward(-15, 0.5);
                     telemetry.addLine("Moving forward 15");
-                    turnClockwise(90, 1);
+                    turnClockwise(90, 0.5);
                     telemetry.addLine("Turning Clockwise 90Deg");
-                    moveForward(12, 1);
+                    moveForward(-12, 0.5);
                     telemetry.addLine("Moving forward 12");
+                    //sleep(30000);
                 }
+
+
 
 
             }
@@ -260,6 +270,10 @@ public class AutonLeftBlue extends LinearOpMode {
             telemetry.addData("Actual", "%7d :%7d", leftFrontDrive.getCurrentPosition(),
                     rightFrontDrive.getCurrentPosition(), leftBackDrive.getCurrentPosition(),
                     rightBackDrive.getCurrentPosition());
+            telemetry.addData("Left Front Power", "%7d", leftFrontDrive.getPower());
+            telemetry.addData("Right Front Power", "%7d", rightFrontDrive.getPower());
+            telemetry.addData("Left Back Power", "%7d", leftBackDrive.getPower());
+            telemetry.addData("Right Back Power", "%7d", rightBackDrive.getPower());
             telemetry.update();
         }
 
